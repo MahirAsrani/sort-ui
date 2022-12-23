@@ -6,6 +6,7 @@ import {
   Container,
   Flex,
   FormControl,
+  FormErrorMessage,
   FormHelperText,
   FormLabel,
   Heading,
@@ -18,9 +19,52 @@ import {
   useRadio,
   useRadioGroup,
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
-  const [value, setValue] = useState("1");
+  const [type, setValueType] = useState("bubble");
+  const [input, setInput] = useState("");
+  const [numList, setNumList] = useState([]);
+  const [error, setError] = useState({
+    show: false,
+  });
+
+  const navigate = useNavigate();
+
+  const rmNumberList = (i) => setNumList(numList.map((n, idx) => idx !== i));
+  const addToList = (e) => {
+    e.preventDefault();
+    setError({
+      show: false,
+    });
+    if (input === "") return;
+    if (isNaN(Number(input))) return;
+    setNumList((vals) => [...vals, Number(input)]);
+    setInput("");
+  };
+  const goToSortUI = () => {
+    if (numList.length === 0) {
+      return setError({
+        show: true,
+        message: "Enter some numbers in this field",
+      });
+    }
+    if (numList.length <= 2) {
+      return setError({
+        show: true,
+        message: "There should be atleast 3 numbers",
+      });
+    }
+
+    switch (type) {
+      case "bubble":
+        navigate("/bubble-sort");
+        break;
+
+      default:
+        break;
+    }
+  };
 
   return (
     <Container maxW={"container.xl"}>
@@ -41,40 +85,61 @@ const Home = () => {
         rounded="lg"
         boxShadow="dark-lg"
       >
-        <FormControl display="flex" flexDirection="column">
-          <RadioGroup onChange={setValue} value={value} mb={4}>
-            <Stack direction={["column", "row"]} gap={2} alignItems="center">
-              <Radio value="1">Bubble Sort</Radio>
-              <Radio value="2" isDisabled>
-                Quick Sort
-              </Radio>
-              <Radio value="3" isDisabled>
-                Insertion Sort
-              </Radio>
+        <form onSubmit={addToList} autoComplete="off">
+          <FormControl display="flex" flexDirection="column">
+            <RadioGroup onChange={setValueType} value={type} mb={4}>
+              <Stack direction={["column", "row"]} gap={2} alignItems="center">
+                <Radio value="bubble">Bubble Sort</Radio>
+                <Radio value="2" isDisabled>
+                  Quick Sort
+                </Radio>
+                <Radio value="3" isDisabled>
+                  Insertion Sort
+                </Radio>
+              </Stack>
+            </RadioGroup>
+          </FormControl>
+          <FormControl
+            display="flex"
+            flexDirection="column"
+            isInvalid={error.show}
+          >
+            <FormLabel>Numbers to Sort</FormLabel>
+            <Input
+              type="number"
+              onChange={(e) => setInput(e.target.value)}
+              value={input}
+              isInvalid={error.show}
+              errorBorderColor="crimson"
+            />
+            {error.show && (
+              <FormErrorMessage>{error.message}.</FormErrorMessage>
+            )}
+            <FormHelperText>
+              Press <Kbd>enter</Kbd> to add another number.
+            </FormHelperText>
+            <Stack spacing={2} my={3} direction="row">
+              {numList.map((n, i) => (
+                <Badge
+                  colorScheme="purple"
+                  fontSize="1xl"
+                  onClick={() => rmNumberList(i)}
+                >
+                  {n}
+                </Badge>
+              ))}
             </Stack>
-          </RadioGroup>
 
-          <FormLabel>Numbers to Sort</FormLabel>
-          <Input type="number" />
-          <FormHelperText>
-            Press <Kbd>enter</Kbd> to add another number.
-          </FormHelperText>
-          <Stack spacing={2} my={3} direction="row">
-            <Badge colorScheme="purple" fontSize="1xl">
-              New
-            </Badge>
-            <Badge colorScheme="purple" fontSize="1xl">
-              New
-            </Badge>
-            <Badge colorScheme="purple" fontSize="1xl">
-              New
-            </Badge>
-          </Stack>
-
-          <Button colorScheme="teal" m={"auto"} size="lg">
-            Get the Numbers Sorted
-          </Button>
-        </FormControl>
+            <Button
+              colorScheme="teal"
+              m={"auto"}
+              size="lg"
+              onClick={goToSortUI}
+            >
+              Get the Numbers Sorted
+            </Button>
+          </FormControl>
+        </form>
       </Box>
     </Container>
   );

@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { useColorMode } from "@chakra-ui/react";
-import "./App.css";
 import Home from "./pages/Home";
 
 function App() {

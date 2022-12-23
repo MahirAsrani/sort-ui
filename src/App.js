@@ -1,30 +1,18 @@
-import {
-  Button,
-  Container,
-  Flex,
-  Heading,
-  useColorMode,
-} from "@chakra-ui/react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { useColorMode } from "@chakra-ui/react";
 import "./App.css";
+import Home from "./pages/Home";
 
 function App() {
   const { colorMode, toggleColorMode } = useColorMode();
 
   return (
-    <Container maxW={"container.xl"}>
-      <Flex direction={"column"} alignItems="center" p={"14"} pb="10">
-        <Heading as={"span"} size={"lg"}>
-          Welcome to
-        </Heading>
-        <Heading as={"h1"} size={"4xl"} textAlign="center" py="2">
-          Sort UI
-        </Heading>
-      </Flex>
-
-      <Button onClick={toggleColorMode}>
-        Toggle {colorMode === "light" ? "Dark" : "Light"}
-      </Button>
-    </Container>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />}></Route>
+        <Route path="/bubble-sort"></Route>
+      </Routes>
+    </Router>
   );
 }
 

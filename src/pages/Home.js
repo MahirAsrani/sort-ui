@@ -58,7 +58,7 @@ const Home = () => {
 
     switch (type) {
       case 'bubble':
-        navigate('/bubble-sort');
+        navigate('/bubble-sort', { state: { nList: numList } });
         break;
 
       default:

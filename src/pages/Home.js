@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Badge,
   Box,
@@ -19,7 +19,7 @@ import {
   useRadio,
   useRadioGroup,
 } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Home = () => {
   const [type, setValueType] = useState('bubble');
@@ -30,6 +30,11 @@ const Home = () => {
   });
 
   const navigate = useNavigate();
+  const { state } = useLocation();
+
+  useEffect(() => {
+    setNumList(state?.nList || []);
+  }, [state]);
 
   const rmNumberList = (i) => setNumList(numList.filter((n, idx) => idx !== i));
   const addToList = (e) => {

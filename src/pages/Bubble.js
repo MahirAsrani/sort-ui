@@ -14,6 +14,11 @@ import Bar from '../components/Bar';
 
 const Bubble = () => {
   const { state } = useLocation();
+  function goBack() {
+    navigate('/', {
+      state: { nList: state.nList },
+    });
+  }
 
   const [info, setData] = useState({
     myList: state.nList || [],
@@ -114,7 +119,7 @@ const Bubble = () => {
         top={'20px'}
         left={'50px'}
         cursor="pointer"
-        onClick={() => navigate('/')}
+        onClick={goBack}
       />
 
       <Flex direction={'column'} alignItems="center" p={'14'} pb="10">

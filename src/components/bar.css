@@ -9,8 +9,21 @@
   color: #000;
   font-weight: 600;
   margin: 5px;
+  border-radius: 12px;
 }
 
 .active {
-  background: linear-gradient(rgb(99, 133, 255), rgb(173, 177, 255)) !important;
+  background: rgb(255 247 114) !important;
+}
+.swap {
+  background: rgb(255, 144, 108) !important;
+  color: white !important;
+}
+
+.sorted {
+  background: linear-gradient(
+    128deg,
+    rgb(25, 176, 75),
+    rgb(181 252 213)
+  ) !important;
 }

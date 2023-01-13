@@ -1,6 +1,15 @@
-import { Box, Container, Flex, Heading } from '@chakra-ui/react';
+import { ArrowBackIcon, RepeatIcon } from '@chakra-ui/icons';
+import {
+  Box,
+  Button,
+  Container,
+  Flex,
+  Heading,
+  Icon,
+  SliderProvider,
+} from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Bar from '../components/Bar';
 
 const Bubble = () => {
@@ -8,47 +17,106 @@ const Bubble = () => {
 
   const [info, setData] = useState({
     myList: state.nList || [],
-    replaceWith: 0,
-    replaceFrom: 1,
+    replaceWith: null,
+    replaceFrom: null,
     maxNum: Math.max(...state.nList),
+    completed: false,
+    sorted: [],
   });
 
-  // Creating the bblSort function
-  function bblSort(arr) {
-    for (let i = 0; i < arr.length; i++) {
-      // Last i elements are already in place
-      setTimeout(() => {
-        setData((obj) => ({ ...obj, replaceWith: i }));
-      }, 2000);
+  function replay() {
+    setData({
+      myList: state.nList || [],
+      replaceWith: null,
+      replaceFrom: null,
+      maxNum: Math.max(...state.nList),
+      completed: false,
+      sorted: [],
+    });
 
-      for (let j = 0; j < arr.length - i - 1; j++) {
-        // Checking if the item at present iteration
-        // is greater than the next iteration
-        if (arr[j] > arr[j + 1]) {
-          // If the condition is true then swap them
-          let temp = arr[j];
-
-          arr[j] = arr[j + 1];
-          arr[j + 1] = temp;
-
-          setTimeout(() => {
-            setData((obj) => ({ ...obj, replaceWith: j, myList: arr }));
-          }, 2000);
-        }
-      }
-    }
-    // Print the sorted array
-    console.log(arr);
+    bblSort(info.myList);
   }
 
+  // Creating the bblSort function
+  async function bblSort(list) {
+    let arr = [...list];
+    let len = arr.length;
+    for (let i = 0; i < len; i++) {
+      for (let j = 0; j < len - i - 1; j++) {
+        await waitTill(1000);
+        setData((obj) => ({ ...obj, replaceFrom: j, replaceWith: j + 1 }));
+        await waitTill(1000);
+
+        if (arr[j] > arr[j + 1]) {
+          setData((obj) => ({ ...obj, swap: true }));
+          await waitTill(1000);
+
+          let tmp = arr[j];
+          arr[j] = arr[j + 1];
+          arr[j + 1] = tmp;
+
+          setData((obj) => ({ ...obj, myList: arr }));
+          await waitTill(1000);
+          setData((obj) => ({ ...obj, swap: false }));
+        }
+      }
+
+      setData((obj) => ({ ...obj, sorted: [...obj.sorted, len - 1 - i] }));
+    }
+
+    // Finished sorting
+    setData((obj) => ({
+      ...obj,
+      completed: true,
+      replaceWith: null,
+      replaceFrom: null,
+    }));
+  }
+
+  const waitTill = (time) =>
+    new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve();
+      }, time);
+    });
+
   useEffect(() => {
-    setTimeout(() => {
-      bblSort(info.myList);
-    }, 100);
+    bblSort(info.myList);
   }, []);
 
+  const navigate = useNavigate();
+
   return (
-    <Container maxW={'container.xl'}>
+    <Container
+      maxW={'container.xl'}
+      minH={'100vh'}
+      display={'flex'}
+      flexDirection="column"
+    >
+      {info.completed && (
+        <Button
+          rightIcon={<RepeatIcon />}
+          colorScheme="blue"
+          variant="outline"
+          my={2}
+          onClick={() => replay()}
+          position="absolute"
+          top={'20px'}
+          right={'50px'}
+        >
+          Replay
+        </Button>
+      )}
+      <Icon
+        boxSize={6}
+        as={ArrowBackIcon}
+        position="absolute"
+        top={'20px'}
+        left={'50px'}
+        cursor="pointer"
+        onClick={() => navigate('/')}
+      />
+
       <Flex direction={'column'} alignItems="center" p={'14'} pb="10">
         <Heading as={'span'} size={'lg'}>
           Peforming
@@ -57,22 +125,25 @@ const Bubble = () => {
           Bubble Sorting
         </Heading>
       </Flex>
-
-      <Flex
-        alignItems={'flex-end'}
-        justifyContent={'space-evenly'}
-        p={'10'}
-        pb="4"
-        h={'500px'}
-      >
-        {info.myList.map((n, idx) => (
-          <Bar
-            currH={n}
-            maxH={info.maxNum}
-            replaceWith={info.replaceWith === idx}
-            replaceFrom={info.replaceFrom === idx}
-          />
-        ))}
+      <Flex alignItems="center" flex="1">
+        <Flex
+          alignItems={'flex-end'}
+          justifyContent={'space-evenly'}
+          h="50vh"
+          w="100%"
+        >
+          {info.myList.map((n, idx) => (
+            <Bar
+              key={idx}
+              currH={n}
+              maxH={info.maxNum}
+              replaceWith={info.replaceWith === idx}
+              replaceFrom={info.replaceFrom === idx}
+              swap={info.swap}
+              sorted={info.sorted.includes(idx)}
+            />
+          ))}
+        </Flex>
       </Flex>
     </Container>
   );

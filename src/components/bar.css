@@ -1,0 +1,16 @@
+#bar {
+  min-height: 50px;
+  background: linear-gradient(rgb(42, 244, 255), rgb(172, 236, 255));
+  min-width: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding: 12px;
+  color: #000;
+  font-weight: 600;
+  margin: 5px;
+}
+
+.active {
+  background: linear-gradient(rgb(99, 133, 255), rgb(173, 177, 255)) !important;
+}

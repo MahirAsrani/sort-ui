@@ -33,7 +33,7 @@ const Home = () => {
   const { state } = useLocation();
 
   useEffect(() => {
-    setNumList(state.nList);
+    setNumList(state?.nList || []);
   }, [state]);
 
   const rmNumberList = (i) => setNumList(numList.filter((n, idx) => idx !== i));
